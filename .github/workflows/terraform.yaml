@@ -1,0 +1,41 @@
+name: Build and Push images to ECR
+ 
+on: 
+#  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - staging
+
+  pull_request:
+   branches:
+    - main
+
+permissions:
+  id-token: write
+  contents: read  
+ 
+jobs:
+ app-staging-use1:
+   if: github.ref == 'refs/heads/staging' || github.event_name == 'pull_request'
+   runs-on: ubuntu-latest
+   environment: app-staging-use1
+   defaults:
+     run:
+       shell: bash
+       working-directory: .
+ 
+   steps:
+     - name: 'Checkout the repository to the runner - ${{ vars.ENVIRONMENT }}'
+       uses: actions/checkout@v2
+
+     - name: 'AWS Login - ${{ vars.ENVIRONMENT }}'
+       uses: ./.github/actions/aws-login
+       with:
+         aws_iam_role: ${{ vars.IAM_ROLE}}
+         aws_region: ${{ vars.REGION }}
+ 
+     - name: 'Build and Push Images to ECR - ${{ vars.ENVIRONMENT }}'
+       uses: ./.github/actions/image-build
+       with:
+         repository_name: ${{ vars.REPOSITORY }}

@@ -1,0 +1,22 @@
+name: "AWS Login"
+description: "AWS Login  to build and push images to ECR"
+inputs:
+  aws_iam_role:
+    description: "iam_role"
+    required: true
+  aws_region:
+    description: "region"
+    required: true
+
+runs:
+  using: "composite"
+  
+  steps:
+    - name: "Setup: Configure AWS credentials"
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        role-to-assume: ${{ inputs.aws_iam_role }}
+        role-session-name: github-actions-image-build
+        role-duration-seconds: 3600
+        aws-region: ${{ inputs.aws_region }}
+
