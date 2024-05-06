@@ -1,6 +1,6 @@
 FROM python:3.12-alpine
 
-RUN apt-get update && apt-get install -y curl
+RUN yum update && yum install -y curl
 
 EXPOSE 5000
 
