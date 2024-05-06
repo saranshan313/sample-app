@@ -1,6 +1,6 @@
 FROM python:3.12-alpine
 
-RUN yum update && yum install -y curl
+RUN apk --no-cache add curl
 
 EXPOSE 5000
 
