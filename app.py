@@ -5,13 +5,24 @@ from os import environ
 # import MySQLdb.cursors
 import re
 import mysql.connector
+import json
 
 app = Flask(__name__)
 
 
 app.secret_key = 'your secret key'
 
-
+# dbCreds = 0
+# with open('db_creds.json', 'r') as f:
+#     dbCreds = json.load(f)
+#     config = {
+#         'user': dbCreds['DB_USER'],
+#         'password': dbCreds['DB_PASSWORD'],
+#         'host': dbCreds['DB_HOST'],
+#         'port': dbCreds['DB_PORT'],
+#         'database': dbCreds['DB_NAME']
+#     }
+# f.close()
 # app.config['MYSQL_HOST'] = 'localhost'
 # app.config['MYSQL_USER'] = 'root'
 # app.config['MYSQL_PASSWORD'] = 'password'
@@ -28,9 +39,11 @@ config = {
 # mysql = MySQL(app)
 connection = mysql.connector.connect(**config)
 
+
 @app.route('/healthcheck')
 def healthcheck():
     return 'Health is Ok'
+
 
 @app.route('/')
 def initialise():
@@ -50,6 +63,8 @@ def initialise():
                    postalcode varchar(100) NOT NULL, \
                    PRIMARY KEY(`id`))')
     return redirect(url_for('login'))
+
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     msg = ''
@@ -61,7 +76,8 @@ def login():
 
 #        connection = mysql.connector.connect(**config)
         cursor = connection.cursor()
-        cursor.execute('SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password, ))
+        cursor.execute(
+            'SELECT * FROM accounts WHERE username = %s AND password = %s', (username, password, ))
         account = cursor.fetchone()
 
         if account:
@@ -108,7 +124,8 @@ def register():
 
 #        connection = mysql.connector.connect(**config)
         cursor = connection.cursor()
-        cursor.execute('SELECT * FROM accounts WHERE username = %s', (username,))
+        cursor.execute(
+            'SELECT * FROM accounts WHERE username = %s', (username,))
         account = cursor.fetchone()
         if account:
             msg = 'Account already exists !'
@@ -137,13 +154,14 @@ def index():
 @app.route("/display")
 def display():
     if 'loggedin' in session:
-#        connection = mysql.connector.connect(**config)
+        #        connection = mysql.connector.connect(**config)
         cursor = connection.cursor()
 #        print(session['id'])
-        cursor.execute('SELECT * FROM accounts WHERE id = %s', (session['id'], ))
+        cursor.execute('SELECT * FROM accounts WHERE id = %s',
+                       (session['id'], ))
         account = cursor.fetchone()
 #        print(account)
-        return render_template("display.html", account=account)        
+        return render_template("display.html", account=account)
     return redirect(url_for('login'))
 
 
@@ -171,7 +189,8 @@ def update():
             postalcode = request.form['postalcode']
 #            connection = mysql.connector.connect(**config)
             cursor = connection.cursor()
-            cursor.execute('SELECT * FROM accounts WHERE username = %s', (username, ))
+            cursor.execute(
+                'SELECT * FROM accounts WHERE username = %s', (username, ))
             account = cursor.fetchone()
             if account:
                 msg = 'Account already exists !'
@@ -184,7 +203,7 @@ def update():
                                username = %s, password = %s, email = %s, \
                                organisation = %s, address = %s, city = %s, \
                                state = %s, country = %s, postalcode = %s \
-                               WHERE id = %s', (username, password, email, organisation, \
+                               WHERE id = %s', (username, password, email, organisation,
                                                 address, city, state, country, postalcode, session['id'], ))
                 connection.commit()
                 msg = 'You have successfully updated !'
