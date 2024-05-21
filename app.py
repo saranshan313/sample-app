@@ -12,29 +12,13 @@ app = Flask(__name__)
 
 app.secret_key = 'your secret key'
 
-dbCreds = 0
-with open('db_creds.json', 'r') as f:
-    dbCreds = json.load(f)
-    config = {
-        'user': dbCreds['DB_USER'],
-        'password': dbCreds['DB_PASSWORD'],
-        'host': dbCreds['DB_HOST'],
-        'port': dbCreds['DB_PORT'],
-        'database': dbCreds['DB_NAME']
-    }
-f.close()
-# app.config['MYSQL_HOST'] = 'localhost'
-# app.config['MYSQL_USER'] = 'root'
-# app.config['MYSQL_PASSWORD'] = 'password'
-# app.config['MYSQL_DB'] = 'geekprofile'
-
-# config = {
-#     'user': environ.get('DB_USER'),
-#     'password': environ.get('DB_PASSWORD'),
-#     'host': environ.get('DB_HOST'),
-#     'port': environ.get('DB_PORT'),
-#     'database': environ.get('DB_NAME')
-# }
+config = {
+    'user': environ.get('DB_USER'),
+    'password': environ.get('DB_PASSWORD'),
+    'host': environ.get('DB_HOST'),
+    'port': environ.get('DB_PORT'),
+    'database': environ.get('DB_NAME')
+}
 
 # mysql = MySQL(app)
 connection = mysql.connector.connect(**config)
